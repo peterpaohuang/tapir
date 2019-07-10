@@ -1,16 +1,19 @@
 import pandas as pd
 import numpy as np
-
-import matplotlib
-import matplotlib.pyplot as plt
-
 import ast
 import re
 import cPickle
 
-from utils import calculate_descriptor
+import matplotlib
+import matplotlib.pyplot as plt
 
-# test different image backends
+from sklearn import linear_model, svm
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_squared_error, r2_score
+
+from utils import NA_encoder,calculate_descriptor
+
+# test different image backends for matplotlib
 gui_env = ['TKAgg','GTKAgg','Qt4Agg','WXAgg']
 for gui in gui_env:
     try:
@@ -196,9 +199,14 @@ class PDBML:
 
 		self.df.to_csv(outpath)
 
-	def train_prediction_model(input_properties, output_property):
+	# make this class
+	def feature_importance():
+		pass
+	def train_prediction_model(input_properties, output_property, na_strategy="mean"):
 		"""
 		Train a regression model based on input_properties to predict output_property
+		Models used include:
+			- Support Vector Regression
 
 		Parameters
 		-------------------------
@@ -206,16 +214,39 @@ class PDBML:
 			list of properties user wants to have as features for model
 		output_property: String
 			single property user wants to predict
+		na_strategy: String
+			options to encode NaN values -
+				1. mean
+				2. most_frequent
 
 		Returns
 		-------------------------
-		fitted_model: Sklearn fitted model, ready for prediction
+		r_2: coefficient R^2
+			defined as (1 - u/v), where u is the residual sum of squares ((y_true - y_pred) ** 2).sum()
+			and v is the total sum of squares ((y_true - y_true.mean()) ** 2).sum()
+		regressor: Sklearn fitted model, ready for prediction
+
 		"""
 
-		pass
+		encoder = NA_encoder(numerical_strategy=na_strategy)
+
+		X = self.df[input_properties]
+		y = self.df[output_property]
+
+		X_train, X_test, y_train, y_test = train_test_split(X,y,test_size=0.2)
+
+		regressor = svm.SVR()
+		regressor.fit(X_train, y_train)
+
+		r_2 = regressor.score(X_test, y_test)
+
+		return r_2, regressor
+
 	def predict():
 		pass
-	def export_fitted_model():
+
+	def export_fitted_model(outpath):
+
 		pass
 
 
