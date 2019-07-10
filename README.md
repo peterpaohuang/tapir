@@ -7,56 +7,68 @@
 4. `conda install --file requirements.txt`
 
 ## How to use
-
+### Initialize
 ```
-from depablo_box import PDBML, 
+from depablo_box import PDBML, model
 
-# Initialize Class
 dx = PDBML()
+```
 
-# Access database as pandas dataframe
+### Access database as pandas dataframe
+```
 df = dx.df
-
-# Get Chemical Descriptors 
+```
+### Get Chemical Descriptors 
+```
 descriptor_list = ["ExactMolWt", "HeavyAtomMolWt"]
 descriptor_df = dx.get_descriptors("Polyethylene", descriptor_list)
-
-# Add Descriptors to dataframe
+```
+### Add Descriptors to dataframe
+```
 dx.add_descriptors(descriptor_list)
-
-# Plot Properties as scatterplot
+```
+### Plot Properties as scatterplot
+```
 dx.plot_properties(property_x="Tg", property_y="ExactMolWt")
-
-# Plot Many Properties as Pairplot
+```
+### Plot Many Properties as Pairplot
+```
 dx.plot_many(property_list)
-
-# Get Correlation Between Two Properties
+```
+### Get Correlation Between Two Properties
+```
 dx.property_correlation("Tm", "HeavyAtomMolWt")
-
-# Plot Correlation Heatmap of Many Properties
+```
+### Plot Correlation Heatmap of Many Properties
+```
 dx.correlation_map(property_list)
-
-# Export Dataframe as CSV file
+```
+### Export Dataframe as CSV file
+```
 dx.export_csv(outpath)
-
-# Initialize Model Training
+```
+### Initialize Model Training
+```
 input_properties = ["Tm", "ExactMolWt", "HeavyAtomMolWt"]
 output_property = "Tg"
 na_strategy = "mean"
 ml = model(input_properties, output_property, na_strategy)
-
-# Train Model
+```
+### Train Model
+```
 ml.train()
-
-# Predict on new data
+```
+### Predict on new data
+```
 new_data = ["10.5", "29", "102.1"]
 results = ml.predict(new_data)
-
-# Plot Feature Importances
+```
+### Plot Feature Importances
+```
 ml.feature_importances()
-
-# Export Trained Model
+```
+### Export Trained Model
+```
 ml.export_fitted_model(outpath)
-
 
 ```
