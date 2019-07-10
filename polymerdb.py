@@ -199,32 +199,39 @@ class PDBML:
 
 		self.df.to_csv(outpath)
 
-	# make this class
-	def feature_importance():
-		pass
-	def train_prediction_model(input_properties, output_property, na_strategy="mean"):
+
+
+
+
+
+class model:
+	def __init__(self, input_properties, output_property, na_strategy="mean"):
+		self.input_properties = input_properties
+		self.output_property = output_property
+		self.na_strategy = na_strategy
+
+		self.df = PDBML().df
+
+		# will be filled during train
+		self.trained_model = None
+		self.r_2 = None
+
+	def feature_importance(self):
+		"""
+		Plot histogram of feature importances for predicting target
+		"""
+
+		imp,properties = zip(*sorted(zip(self.trained_model,input_properties)))
+
+		plt.barh(range(len(properties)), imp, align='center')
+	    plt.yticks(range(len(properties)), properties)
+	    plt.show()
+		return 
+	def train(self):
 		"""
 		Train a regression model based on input_properties to predict output_property
 		Models used include:
 			- Support Vector Regression
-
-		Parameters
-		-------------------------
-		input_properties: [String]
-			list of properties user wants to have as features for model
-		output_property: String
-			single property user wants to predict
-		na_strategy: String
-			options to encode NaN values -
-				1. mean
-				2. most_frequent
-
-		Returns
-		-------------------------
-		r_2: coefficient R^2
-			defined as (1 - u/v), where u is the residual sum of squares ((y_true - y_pred) ** 2).sum()
-			and v is the total sum of squares ((y_true - y_true.mean()) ** 2).sum()
-		regressor: Sklearn fitted model, ready for prediction
 
 		"""
 
@@ -238,15 +245,13 @@ class PDBML:
 		regressor = svm.SVR()
 		regressor.fit(X_train, y_train)
 
-		r_2 = regressor.score(X_test, y_test)
+		self.r_2 = regressor.score(X_test, y_test)
+		self.trained_model = regressor
 
-		return r_2, regressor
+	def predict(self, input_properties):
+		return self.trained_model.predict(input_properties)
 
-	def predict():
-		pass
-
-	def export_fitted_model(outpath):
-
-		pass
-
+	def export_fitted_model(self,outpath):
+		with open(outpath, 'wb') as f:
+			cPickle.dump(self.trained_model,f)
 
