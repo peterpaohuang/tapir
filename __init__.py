@@ -1,1 +1,1 @@
-from polymerdb import PDBML
+from polymerdb import PDBML, model

@@ -226,7 +226,7 @@ class model:
 		plt.barh(range(len(properties)), imp, align='center')
 	    plt.yticks(range(len(properties)), properties)
 	    plt.show()
-		return 
+
 	def train(self):
 		"""
 		Train a regression model based on input_properties to predict output_property
