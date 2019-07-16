@@ -102,10 +102,14 @@ results = ml.predict(new_data)
 ```
 ml.feature_importances()
 ```
-### Export Trained Model
+### Export Trained Model as Pickle File
 ```
 ml.export_fitted_model(outpath)
 ```
-
-## Load Model and Predict
+### Load Pickle File as Trained Model
+```
+import pickle
+ml = pickle.load(outpath)
+results = ml.predict(new_data)
+```
 
