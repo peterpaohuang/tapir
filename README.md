@@ -105,5 +105,7 @@ ml.feature_importances()
 ### Export Trained Model
 ```
 ml.export_fitted_model(outpath)
-
 ```
+
+## Load Model and Predict
+
