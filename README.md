@@ -43,9 +43,13 @@ df.loc[df["smiles"] == smiles]
 
 ### List Chemical Descriptors
 ```
-
+dx.chemical_descriptors
 ```
 
+### List Machine Learning Methods
+```
+dx.ml_methods
+```
 
 ## How to use
 ### Get Chemical Descriptors 
