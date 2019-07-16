@@ -93,6 +93,11 @@ ml = model(input_properties, output_property, na_strategy)
 ```
 ml.train()
 ```
+#### View Trained Model R^2 Score
+```
+ml.r_2
+```
+
 ### Predict on new data
 ```
 new_data = ["10.5", "29", "102.1"]
