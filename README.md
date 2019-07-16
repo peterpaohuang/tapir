@@ -1,4 +1,4 @@
-# Depablo-Box
+# Depablo_Box
 
 ## Installation
 1. [Setup RDKit environment](http://www.rdkit.org/docs/Install.html)
