@@ -77,7 +77,7 @@ dx.correlation_map(property_list)
 ```
 dx.export_csv(outpath)
 ```
-### Initialize Model Training
+## Initialize Model Training
 ```
 input_properties = ["Tm", "ExactMolWt", "HeavyAtomMolWt"]
 output_property = "Tg"
