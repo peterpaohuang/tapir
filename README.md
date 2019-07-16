@@ -83,6 +83,7 @@ dx.export_csv(outpath)
 ```
 ## Initialize Model Training
 ```
+# input_properties must have already been added to PDBML().df
 input_properties = ["Tm", "ExactMolWt", "HeavyAtomMolWt"]
 output_property = "Tg"
 na_strategy = "mean"
