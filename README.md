@@ -6,18 +6,48 @@
 3. Move polymer_db.csv to depablo_box directory
 4. `conda install --file requirements.txt`
 
-## How to use
-### Initialize
+## Initialize
 ```
 from depablo_box import PDBML, model
 
 dx = PDBML()
 ```
-
+## Understand the database
 ### Access database as pandas dataframe
 ```
 df = dx.df
 ```
+
+### List all physical properties
+```
+df.columns
+```
+
+### List all polymers and corresponding smiles
+```
+# list both polymer names and smiles
+df.index
+
+# list only polymer names
+df.index.get_level_values('polymer_name')
+
+# list only smiles
+df.index.get_level_values('smiles')
+
+# retrieve polymer row by polymer_name
+df.loc[polymer_name]
+
+# retrieve polymer row by smiles
+df.loc[smiles]
+```
+
+### List Chemical Descriptors
+```
+
+```
+
+
+## How to use
 ### Get Chemical Descriptors 
 ```
 descriptor_list = ["ExactMolWt", "HeavyAtomMolWt"]
