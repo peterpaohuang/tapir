@@ -26,19 +26,19 @@ df.columns
 ### List all polymers and corresponding smiles
 ```
 # list both polymer names and smiles
-df.index
+df[["polymer_name", "smiles"]]
 
 # list only polymer names
-df.index.get_level_values('polymer_name')
+df["polymer_name"]
 
 # list only smiles
-df.index.get_level_values('smiles')
+df["smiles"]
 
 # retrieve polymer row by polymer_name
-df.loc[polymer_name]
+df.loc[df["polymer_name"] == polymer_name]
 
 # retrieve polymer row by smiles
-df.loc[smiles]
+df.loc[df["smiles"] == smiles]
 ```
 
 ### List Chemical Descriptors
