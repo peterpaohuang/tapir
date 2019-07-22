@@ -39,13 +39,22 @@ class model:
 		plt.tight_layout()
 		plt.show()
 
-	def train(self):
+	def train(self, model_type):
 		"""
 		Train a regression model based on input_properties to predict output_property
-		Models used include:
-			- Support Vector Regression
+
+		Parameters
+		----------------------
+		model_type: String
+			model algorithm to train data on 
 
 		"""
+		algorithms = {
+			"Support Vector Regression": svm.SVR(kernel="linear"),
+			"Linear Regression": linear_model.LinearRegression(),
+			"Ridge Regression": linear_model.Ridge(),
+			"Lasso Regression": linear_model.Lasso()
+		}
 
 		encoder = NA_encoder(numerical_strategy=self.na_strategy)
 		self.df = NA_encoder().fit_transform(self.df)
@@ -54,7 +63,8 @@ class model:
 
 		X_train, X_test, y_train, y_test = train_test_split(X,y,test_size=0.2)
 
-		regressor = svm.SVR(kernel='linear')
+
+		regressor = algorithms[model_type]
 		regressor.fit(X_train, y_train)
 
 		self.r_2 = regressor.score(X_test, y_test)
