@@ -1,28 +1,35 @@
+import numpy as np
+import pandas as pd
+
 from rdkit import Chem
 from rdkit.Chem import Descriptors
+from sklearn.impute import SimpleImputer as Imputer
 
 def calculate_descriptor(smiles, descriptor):
-	"""
-	Calculate a single descriptor for single smiles and return descriptor value
+    """
+    Calculate a single descriptor for single smiles and return descriptor value
 
-	Parameters
-	-------------------------
-	smiles: String
-	descriptor: String
+    Parameters
+    -------------------------
+    smiles: String
+    descriptor: String
 
-	Returns
-	-------------------------
-	descriptor_value: String
-		value of generated descriptor based on smiles
+    Returns
+    -------------------------
+    descriptor_value: String
+        value of generated descriptor based on smiles
 
-	"""
+    """
 
-	descriptor_method = getattr(Descriptors, descriptor)
+    descriptor_method = getattr(Descriptors, descriptor)
 
-	m = Chem.MolFromSmiles(smiles)
-	descriptor_value = descriptor_method(m)
+    try:
+        m = Chem.MolFromSmiles(smiles)
+        descriptor_value = descriptor_method(m)
 
-	return descriptor_value
+        return descriptor_value
+    except Exception as e:
+        return np.nan
 
 class NA_encoder():
 
@@ -36,10 +43,6 @@ class NA_encoder():
         The strategy to encode NA for numerical features.
         Available strategies = "mean", "median",
         "most_frequent" or a float/int value
-
-    categorical_strategy : str, default = '<NULL>'
-        The strategy to encode NA for categorical features.
-        Available strategies = a string or "most_frequent"
     """
 
     def __init__(self,
@@ -70,7 +73,7 @@ class NA_encoder():
             else:
                 setattr(self, k, v)
 
-    def fit(self, df_train, args):
+    def fit(self, df_train):
 
         """Fits NA Encoder.
 
@@ -79,18 +82,11 @@ class NA_encoder():
         df_train : pandas dataframe of shape = (n_train, n_features)
             The train dataset with numerical and categorical features.
 
-        args: either empty or tuple
-            Tuple value is from extract_data and empty value is from feature_engineering
-            tuple: (filename, store_default_var_callback)
-
         Returns
         -------
         object
             self
        """
-        if args:
-            filename = args[0]
-            store_default_var_callback = args[1]
 
         self.__Lcat = df_train.dtypes[df_train.dtypes == 'object'].index
         self.__Lnum = df_train.dtypes[df_train.dtypes != 'object'].index
@@ -100,16 +96,6 @@ class NA_encoder():
 
             self.__imp = Imputer(strategy=self.numerical_strategy)
 
-            if args:
-                # store most_frequent for each column in db through callback function 
-                for column_name in list(df_train):
-                    try:
-                        default_val = df_train[column_name].dropna().mean()
-                    except:
-                        default_val = df_train[column_name].mode()[0]
-                    finally:
-                        store_default_var_callback(filename, column_name, default_val)
-                # storing finished
 
             if (len(self.__Lnum) != 0):
                 self.__imp.fit(df_train[self.__Lnum])
@@ -123,13 +109,6 @@ class NA_encoder():
         # Dealing with categorical features
         if (type(self.categorical_strategy) == str):
             if (self.categorical_strategy == "most_frequent"):
-
-                if args:
-                    # store most_frequent for each column in db through callback function 
-                    for column_name in list(df_train):
-                        default_val = df_train[column_name].mode()[0]
-                        store_default_var_callback(filename, column_name, default_val)
-                    # storing finished
 
                 na_count = df_train[self.__Lcat].isnull().sum()
 
@@ -147,7 +126,7 @@ class NA_encoder():
 
         return self
 
-    def fit_transform(self, df_train, *args):
+    def fit_transform(self, df_train):
 
         """Fits NA Encoder and transforms the dataset.
 
@@ -165,7 +144,7 @@ class NA_encoder():
             The train dataset with no missing values.
         """
 
-        self.fit(df_train, args)
+        self.fit(df_train)
 
         return self.transform(df_train)
 

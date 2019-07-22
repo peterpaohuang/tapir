@@ -1,3 +1,4 @@
 env/
 polymer_db.csv
 testing.py
+__pycache__
