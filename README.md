@@ -105,8 +105,15 @@ na_strategy = "mean"
 ml = model(input_properties, output_property, na_strategy)
 ```
 ### Train Model
+#### Model Types
+1. `Support Vector Regression`
+2. `Linear Regression`
+3. `Ridge Regression`
+4. `Lasso Regression`
+5. `Gaussian Process Regression`
 ```
-ml.train()
+model_type = "Support Vector Regression"
+ml.train(model_type)
 ```
 #### View Trained Model R^2 Score
 ```
@@ -119,6 +126,7 @@ new_data = ["10.5", "29", "102.1"]
 results = ml.predict(new_data)
 ```
 ### Plot Feature Importances
+_note: model type Gaussian Process Regression does not support feature importances_
 ```
 ml.feature_importances()
 ```
