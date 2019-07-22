@@ -72,7 +72,7 @@ class PDBML:
 			file path to write result to
 		"""
 
-		smiles = get_smiles_from_identifier(polymer_identifier)
+		smiles = self.get_smiles_from_identifier(polymer_identifier)
 		
 		result = generate_input_files(smiles, format)
 		with open(outpath, 'w+') as f:
@@ -96,7 +96,7 @@ class PDBML:
 			one chemical dataframe with each column representing a generated descriptor based on descriptor_list
 
 		"""
-		smiles = get_smiles_from_identifier(polymer_identifier)
+		smiles = self.get_smiles_from_identifier(polymer_identifier)
 
 		single_row_df = pd.DataFrame()
 		for descriptor in descriptor_list:
