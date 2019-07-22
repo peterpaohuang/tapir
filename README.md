@@ -67,7 +67,9 @@ descriptor_df = dx.get_descriptors("Polyethylene", descriptor_list)
 ### Generate Input Files for Quantum Chemistry Codes
 ```
 polymer_identifier = '*C(C*)C'
-dx.create_input_file(polymer_identifier, 'Gaussian 98/03 Input', '/file/path/your_polymer.xyz')
+conversion_format = 'Gaussian 98/03 Input'
+outpath = '/file/path/your_polymer.xyz'
+dx.create_input_file(polymer_identifier, conversion_format, outpath)
 ```
 
 ### Add Descriptors to dataframe
