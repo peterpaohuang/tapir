@@ -63,6 +63,15 @@ dx.ml_methods
 descriptor_list = ["ExactMolWt", "HeavyAtomMolWt"]
 descriptor_df = dx.get_descriptors("Polyethylene", descriptor_list)
 ```
+
+### Generate Input Files for Quantum Chemistry Codes
+```
+polymer_identifier = '*C(C*)C'
+conversion_format = 'Gaussian 98/03 Input'
+outpath = '/file/path/your_polymer.xyz'
+dx.create_input_file(polymer_identifier, conversion_format, outpath)
+```
+
 ### Add Descriptors to dataframe
 ```
 dx.add_descriptors(descriptor_list)
