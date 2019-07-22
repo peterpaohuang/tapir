@@ -12,6 +12,7 @@ for gui in gui_env:
 import seaborn as sns
 
 from sklearn import linear_model, svm
+from sklearn.gaussian_process import GaussianProcessRegressor
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, r2_score
 
@@ -53,7 +54,8 @@ class model:
 			"Support Vector Regression": svm.SVR(kernel="linear"),
 			"Linear Regression": linear_model.LinearRegression(),
 			"Ridge Regression": linear_model.Ridge(),
-			"Lasso Regression": linear_model.Lasso()
+			"Lasso Regression": linear_model.Lasso(),
+			"Gaussian Process Regression": GaussianProcessRegressor()
 		}
 
 		encoder = NA_encoder(numerical_strategy=self.na_strategy)
