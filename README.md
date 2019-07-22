@@ -126,7 +126,7 @@ new_data = ["10.5", "29", "102.1"]
 results = ml.predict(new_data)
 ```
 ### Plot Feature Importances
-_note: model type Gaussian Process Regression does not support feature importances_
+_Note: model type Gaussian Process Regression does not support feature importances_
 ```
 ml.feature_importances()
 ```
