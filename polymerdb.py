@@ -17,7 +17,7 @@ for gui in gui_env:
 		continue
 
 import seaborn as sns
-from depablo_box.utils import NA_encoder,calculate_descriptor
+from depablo_box.utils import NA_encoder,calculate_descriptor, generate_input_files
 
 class PDBML:
 	def __init__(self, na_values="na"):
@@ -31,11 +31,52 @@ class PDBML:
 
 		self.df = pd.read_csv('depablo_box/polymer_db.csv').replace(na_values, np.nan)
 		# self.df.set_index(["polymer_name"], inplace=True) 
-		self.chemical_descriptors = ['ExactMolWt', 'FpDensityMorgan1', 'FpDensityMorgan2', 'FpDensityMorgan3', 'HeavyAtomMolWt', 'MolWt', 'NumRadicalElectrons', 'NumValenceElectrons', 'BalabanJ', 'BertzCT', 'Ipc', 'HallKierAlpha', 'MolLogP', 'MolMR', 'HeavyAtomCount', 'NHOHCount', 'NOCount', 'NumHAcceptors', 'NumHDonors', 'NumHeteroatoms', 'NumRotatableBonds', 'RingCount', 'FractionCSP3', 'TPSA']
-		self.ml_methods = []
+		self.chemical_descriptors = ['Gaussian','ExactMolWt', 'FpDensityMorgan1', 'FpDensityMorgan2', 'FpDensityMorgan3', 'HeavyAtomMolWt', 'MolWt', 'NumRadicalElectrons', 'NumValenceElectrons', 'BalabanJ', 'BertzCT', 'Ipc', 'HallKierAlpha', 'MolLogP', 'MolMR', 'HeavyAtomCount', 'NHOHCount', 'NOCount', 'NumHAcceptors', 'NumHDonors', 'NumHeteroatoms', 'NumRotatableBonds', 'RingCount', 'FractionCSP3', 'TPSA']
+		self.ml_methods = ["Support Vector Regression"]
 		# set index as polymer name rather than integer - each name is unique
 
 		self.pd = pd
+
+	def get_smiles_from_identifier(self, polymer_identifier):
+		"""
+		Standarize format of either polymer name or polymer smiles into only smiles format
+		Parameters
+		------------------------
+		polymer_identifier: String
+			Unique identifier of chemical (either polymer name or smiles)
+
+		Return
+		------------------------
+		smiles: String
+			polymer's smiles format
+		"""
+		if polymer_identifier in self.df["smiles"].tolist(): # if polymer_identifier is smiles
+			smiles = polymer_identifier
+		elif polymer_identifier in self.df["polymer_name"].tolist(): # if polymer_identifier is polymer_name
+			smiles = self.df.loc[self.df["polymer_name"] == polymer_identifier]["smiles"].tolist()[0]
+		else:
+			raise KeyError("Your input did not match any polymer in our database")
+
+		return smiles
+	def create_input_file(self, polymer_identifier, format, outpath):
+		"""
+		Generate input file for quantum chemistry codes
+
+		Parameters
+		------------------------
+		polymer_identifier: String
+			Unique identifier of chemical (either polymer name or smiles)
+		format: String
+			File format you want to generate from polymer_identifier
+		outpath: String
+			file path to write result to
+		"""
+
+		smiles = get_smiles_from_identifier(polymer_identifier)
+		
+		result = generate_input_files(smiles, format)
+		with open(outpath, 'w+') as f:
+			f.write(result)
 
 	def get_descriptors(self, polymer_identifier, descriptor_list):
 		"""
@@ -55,12 +96,7 @@ class PDBML:
 			one chemical dataframe with each column representing a generated descriptor based on descriptor_list
 
 		"""
-		if polymer_identifier in self.df["smiles"].tolist(): # if polymer_identifier is smiles
-			smiles = polymer_identifier
-		elif polymer_identifier in self.df["polymer_name"].tolist(): # if polymer_identifier is polymer_name
-			smiles = self.df.loc[self.df["polymer_name"] == polymer_identifier]["smiles"].tolist()[0]
-		else:
-			raise KeyError("Your input did not match any polymer in our database")
+		smiles = get_smiles_from_identifier(polymer_identifier)
 
 		single_row_df = pd.DataFrame()
 		for descriptor in descriptor_list:

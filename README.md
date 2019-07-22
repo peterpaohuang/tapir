@@ -1,10 +1,16 @@
 # Depablo_Box
 
+## Requirements
+
+1. Conda is installed
+
 ## Installation
-1. [Setup RDKit environment](http://www.rdkit.org/docs/Install.html)
-2. Download polymer_db.csv  
-3. Move polymer_db.csv to depablo_box directory
-4. `conda install --file requirements.txt`
+1. `git clone https://github.com/peterpaohuang/depablo_box.git`
+2. `conda create -c rdkit -n my-rdkit-env rdkit`
+3. `conda activate my-rdkit-env`
+4. Download [polymer_db.csv](https://drive.google.com/file/d/1J0MbhEI2AIuihl0YavBBL0xl9xWgDBjQ/view?usp=sharing)
+5. Move polymer_db.csv into depablo_box directory
+6. `python setup.py`
 
 ## Initialize
 ```
@@ -117,4 +123,3 @@ import pickle
 ml = pickle.load(outpath)
 results = ml.predict(new_data)
 ```
-

@@ -77,6 +77,16 @@ class model:
 		return self.trained_model.predict(input_properties)
 
 	def export_fitted_model(self,outpath):
+		"""
+		Export fitted model as pickle file to outpath
+
+		Parameters
+		-----------------------------
+		outpath: String
+			file path to write fitted model pickle to
+
+		"""
+
 		with open(outpath, 'wb') as f:
 			pickle.dump(self.trained_model,f)
 

@@ -1,9 +1,41 @@
 import numpy as np
 import pandas as pd
 
+import openbabel
 from rdkit import Chem
 from rdkit.Chem import Descriptors
 from sklearn.impute import SimpleImputer as Imputer
+
+
+def generate_input_files(smiles, format):
+    """
+    Generate single input file for quantum chemistry codes
+
+    Parameters
+    -------------------------
+    smiles: String
+    format: String
+        format you want to generate from smiles
+
+    Returns
+    -------------------------
+    out: String
+        the resulting conversion format from smiles
+    """
+
+    format_conversion = {
+        'Gaussian 98/03 Input': 'gau'
+    }
+    obConversion = openbabel.OBConversion()
+    obConversion.SetInAndOutFormats("smi", format_conversion[format])
+
+    mol = openbabel.OBMol()
+    obConversion.ReadString(mol, smiles)
+
+
+    out = obConversion.WriteString(mol)
+
+    return out
 
 def calculate_descriptor(smiles, descriptor):
     """
@@ -14,22 +46,26 @@ def calculate_descriptor(smiles, descriptor):
     smiles: String
     descriptor: String
 
-    Returns
+    Returns 
     -------------------------
     descriptor_value: String
         value of generated descriptor based on smiles
 
     """
+    if descriptor != "Gaussian":
 
-    descriptor_method = getattr(Descriptors, descriptor)
+        descriptor_method = getattr(Descriptors, descriptor)
 
-    try:
-        m = Chem.MolFromSmiles(smiles)
-        descriptor_value = descriptor_method(m)
+        try:
+            m = Chem.MolFromSmiles(smiles)
+            descriptor_value = descriptor_method(m)
 
-        return descriptor_value
-    except Exception as e:
-        return np.nan
+            return descriptor_value
+        except Exception as e:
+            return np.nan
+    else:
+        return conversion_smi_to_gau(smiles)
+        
 
 class NA_encoder():
 
