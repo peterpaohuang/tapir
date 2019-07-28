@@ -122,7 +122,7 @@ ml.r_2
 
 ### Predict on new data
 ```
-new_data = ["10.5", "29", "102.1"]
+new_data = [["10.5", "29", "102.1"]]
 results = ml.predict(new_data)
 ```
 ### Plot Feature Importances
