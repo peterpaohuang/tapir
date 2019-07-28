@@ -24,11 +24,6 @@ dx = PDBML()
 df = dx.df
 ```
 
-### List all physical properties
-```
-df.columns
-```
-
 ### List all polymers and corresponding smiles
 ```
 # list both polymer names and smiles
@@ -50,7 +45,7 @@ df.loc[df["SMILES"] == smiles]
 ### List Descriptors
 ```
 dx.chemical_descriptors
-dx.physical_descriptors
+dx.experimental_descriptors
 ```
 
 ### List Machine Learning Methods
