@@ -54,6 +54,7 @@ dx.ml_methods
 ```
 
 ## How to use
+_Note: currently, depablo_box is only able to handle the calculation of chemical descriptors. Experimental descriptors already exists within the database (dx.df)_
 ### Get Chemical Descriptors 
 ```
 descriptor_list = ["ExactMolWt", "HeavyAtomMolWt"]
@@ -68,7 +69,7 @@ outpath = '/file/path/your_polymer.xyz'
 dx.create_input_file(polymer_identifier, conversion_format, outpath)
 ```
 
-### Add Descriptors to dataframe
+### Add Chemical Descriptors to dataframe
 ```
 dx.add_descriptors(descriptor_list)
 ```
