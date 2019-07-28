@@ -47,9 +47,10 @@ df.loc[df["polymer_name"] == polymer_name]
 df.loc[df["smiles"] == smiles]
 ```
 
-### List Chemical Descriptors
+### List Descriptors
 ```
 dx.chemical_descriptors
+dx.physical_descriptors
 ```
 
 ### List Machine Learning Methods
