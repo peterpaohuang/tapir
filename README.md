@@ -102,7 +102,7 @@ dx.export_csv(outpath)
 input_properties = ["Tm", "ExactMolWt", "HeavyAtomMolWt"]
 output_property = "Tg"
 na_strategy = "mean"
-ml = model(df, input_properties, output_property, na_strategy)
+ml = model(df, input_properties, output_property, na_strategy=na_strategy)
 ```
 ### Train Model
 #### Model Types
