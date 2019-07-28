@@ -16,7 +16,7 @@ from sklearn.gaussian_process import GaussianProcessRegressor
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, r2_score
 
-from depablo_box.utils import NA_encoder,calculate_descriptor
+from depablo_box.main.utils import NA_encoder,calculate_descriptor
 
 class model:
 	def __init__(self, df, input_properties, output_property, na_strategy="mean"):

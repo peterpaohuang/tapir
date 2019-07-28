@@ -1,2 +1,2 @@
-from depablo_box.polymerdb import PDBML
-from depablo_box.polymerml import model
+from depablo_box.main.polymerdb import PDBML
+from depablo_box.main.polymerml import model

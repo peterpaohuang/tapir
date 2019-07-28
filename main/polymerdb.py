@@ -17,7 +17,7 @@ for gui in gui_env:
 		continue
 
 import seaborn as sns
-from depablo_box.utils import NA_encoder,calculate_descriptor, generate_input_files
+from depablo_box.main.utils import NA_encoder,calculate_descriptor, generate_input_files
 
 class PDBML:
 	def __init__(self, na_values="na"):
@@ -31,8 +31,15 @@ class PDBML:
 
 		self.df = pd.read_csv('depablo_box/polymer_db.csv').replace(na_values, np.nan)
 		# self.df.set_index(["polymer_name"], inplace=True) 
-		self.chemical_descriptors = ['Gaussian','ExactMolWt', 'FpDensityMorgan1', 'FpDensityMorgan2', 'FpDensityMorgan3', 'HeavyAtomMolWt', 'MolWt', 'NumRadicalElectrons', 'NumValenceElectrons', 'BalabanJ', 'BertzCT', 'Ipc', 'HallKierAlpha', 'MolLogP', 'MolMR', 'HeavyAtomCount', 'NHOHCount', 'NOCount', 'NumHAcceptors', 'NumHDonors', 'NumHeteroatoms', 'NumRotatableBonds', 'RingCount', 'FractionCSP3', 'TPSA']
-		self.ml_methods = ["Support Vector Regression"]
+		self.experimental_descriptors = ["Glass Transition Temp", "Melting Temp", "Density", "Solubility Parameters"]
+		self.chemical_descriptors = ['ExactMolWt', 'FpDensityMorgan1', 
+		'FpDensityMorgan2', 'FpDensityMorgan3', 'HeavyAtomMolWt', 'MolWt', 'NumRadicalElectrons', 
+		'NumValenceElectrons', 'BalabanJ', 'BertzCT', 'Ipc', 'HallKierAlpha', 'MolLogP', 'MolMR', 'HeavyAtomCount', 
+		'NHOHCount', 'NOCount', 'NumHAcceptors', 'NumHDonors', 'NumHeteroatoms', 'NumRotatableBonds', 'RingCount', 
+		'FractionCSP3', 'TPSA']
+		self.structures = ['Gaussian', 'Protein Data Bank']
+		self.ml_methods = ["Support Vector Regression", "Linear Regression", "Ridge Regression", 
+		"Lasso Regression", "Gaussian Process Regression"]
 		# set index as polymer name rather than integer - each name is unique
 
 		self.pd = pd
@@ -126,6 +133,14 @@ class PDBML:
 		for descriptor in descriptor_list:
 			if descriptor not in list(self.df):
 				generated_descriptor_series = self.df["smiles"].apply(calculate_descriptor, args=(descriptor,))
+
+				#store generated descriptor series in class df
+				self.df[descriptor] = generated_descriptor_series
+
+	def add_molecular_structures(self, structure_list):
+		for structure in structure_list:
+			if structure not in self.structures:
+				generated_structure_series = self.df["smiles"].apply(generate_input_files, args=(structure,))
 
 				#store generated descriptor series in class df
 				self.df[descriptor] = generated_descriptor_series
@@ -229,7 +244,8 @@ class PDBML:
 
 		fig, ax = plt.subplots()
 		corr = self.df[property_list].corr()
-		sns.heatmap(corr, mask=np.zeros_like(corr, dtype=np.bool), cmap=sns.diverging_palette(220, 10, as_cmap=True), annot=True, ax=ax)
+		sns.heatmap(corr, mask=np.zeros_like(corr, dtype=np.bool), cmap=sns.diverging_palette(220, 10, 
+			as_cmap=True), annot=True, ax=ax)
 		fig.tight_layout()
 		plt.show()
 

@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 
 import openbabel
+from openbabel import *
 from rdkit import Chem
 from rdkit.Chem import Descriptors
 from sklearn.impute import SimpleImputer as Imputer
@@ -23,19 +24,42 @@ def generate_input_files(smiles, format):
         the resulting conversion format from smiles
     """
 
-    format_conversion = {
+    first_level_conversion = {
+        'Protein Data Bank': 'pdb'
+        # can eventually add more
+    }
+    second_level_conversion = {
+        # files that need 3 dimension input to calculate
         'Gaussian 98/03 Input': 'gau'
     }
-    obConversion = openbabel.OBConversion()
-    obConversion.SetInAndOutFormats("smi", format_conversion[format])
 
-    mol = openbabel.OBMol()
-    obConversion.ReadString(mol, smiles)
+    if format in first_level_conversion.keys():
+        obConversion = openbabel.OBConversion()
+        obConversion.SetInAndOutFormats("smi", first_level_conversion[format])
+
+        mol = openbabel.OBMol()
+        obConversion.ReadString(mol, smiles)
 
 
-    out = obConversion.WriteString(mol)
+        out = obConversion.WriteString(mol)
 
-    return out
+        return out
+    elif format in second_level_conversion.keys():
+        pdb = generate_input_files(smiles, "Protein Data Bank")
+
+        obConversion = openbabel.OBConversion()
+        obConversion.SetInAndOutFormats("pdb", second_level_conversion[format])
+
+        mol = openbabel.OBMol()
+        obConversion.ReadString(mol, pdb)
+
+
+        out = obConversion.WriteString(mol)
+
+        return out
+    else:
+        raise KeyError("File format cannot be used to generate files. " + 
+            "Please refer to our documentation to see accepted file types")
 
 def calculate_descriptor(smiles, descriptor):
     """
@@ -52,20 +76,17 @@ def calculate_descriptor(smiles, descriptor):
         value of generated descriptor based on smiles
 
     """
-    if descriptor != "Gaussian":
 
-        descriptor_method = getattr(Descriptors, descriptor)
+    descriptor_method = getattr(Descriptors, descriptor)
 
-        try:
-            m = Chem.MolFromSmiles(smiles)
-            descriptor_value = descriptor_method(m)
+    try:
+        m = Chem.MolFromSmiles(smiles)
+        descriptor_value = descriptor_method(m)
 
-            return descriptor_value
-        except Exception as e:
-            return np.nan
-    else:
-        return conversion_smi_to_gau(smiles)
-        
+        return descriptor_value
+    except Exception as e:
+        return np.nan
+    
 
 class NA_encoder():
 
