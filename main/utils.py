@@ -4,9 +4,28 @@ import pandas as pd
 import openbabel
 from openbabel import *
 from rdkit import Chem
-from rdkit.Chem import Descriptors
+from rdkit.Chem import Descriptors,rdmolfiles,AllChem
 from sklearn.impute import SimpleImputer as Imputer
 
+
+def pdb_to_gau(pdb):
+    obConversion = openbabel.OBConversion()
+    obConversion.SetInAndOutFormats("pdb", "gau")
+
+    mol = openbabel.OBMol()
+    obConversion.ReadString(mol, pdb)
+
+
+    outPDB = obConversion.WriteString(mol)
+    return outPDB
+
+def smiles_to_pdbfile(smiles_string):
+    mol = Chem.MolFromSmiles(smiles_string)
+    mol = Chem.AddHs(mol)
+    AllChem.EmbedMolecule(mol)
+    AllChem.MMFFOptimizeMolecule(mol)
+    mol = Chem.MolToPDBBlock(mol)
+    return mol
 
 def generate_input_files(smiles, format):
     """
@@ -25,36 +44,21 @@ def generate_input_files(smiles, format):
     """
 
     first_level_conversion = {
-        'Protein Data Bank': 'pdb'
+        'Protein Data Bank': smiles_to_pdbfile
         # can eventually add more
     }
     second_level_conversion = {
         # files that need 3 dimension input to calculate
-        'Gaussian 98/03 Input': 'gau'
+        'Gaussian 98/03 Input': pdb_to_gau
     }
 
     if format in first_level_conversion.keys():
-        obConversion = openbabel.OBConversion()
-        obConversion.SetInAndOutFormats("smi", first_level_conversion[format])
-
-        mol = openbabel.OBMol()
-        obConversion.ReadString(mol, smiles)
-
-
-        out = obConversion.WriteString(mol)
+        out = first_level_conversion[format](smiles)
 
         return out
     elif format in second_level_conversion.keys():
-        pdb = generate_input_files(smiles, "Protein Data Bank")
-
-        obConversion = openbabel.OBConversion()
-        obConversion.SetInAndOutFormats("pdb", second_level_conversion[format])
-
-        mol = openbabel.OBMol()
-        obConversion.ReadString(mol, pdb)
-
-
-        out = obConversion.WriteString(mol)
+        pdb = first_level_conversion["Protein Data Bank"](smiles)
+        out = second_level_conversion[format](pdb)
 
         return out
     else:
