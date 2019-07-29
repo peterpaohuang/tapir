@@ -67,6 +67,9 @@ descriptor_df = dx.get_descriptors("Polyethylene", descriptor_list)
 ```
 
 ### Generate Input Files for Quantum Chemistry Codes
+#### Supported Conversion Formats
+1. `Protein Data Bank`
+2. `Gaussian 98/03 Input`
 ```
 polymer_identifier = '*C(C*)C'
 conversion_format = 'Gaussian 98/03 Input'
@@ -107,7 +110,7 @@ na_strategy = "mean"
 ml = model(df, input_properties, output_property, na_strategy=na_strategy)
 ```
 ### Train Model
-#### Model Types
+#### Supported Model Types
 1. `Support Vector Regression`
 2. `Linear Regression`
 3. `Ridge Regression`
