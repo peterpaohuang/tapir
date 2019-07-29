@@ -53,6 +53,11 @@ dx.experimental_descriptors
 dx.ml_methods
 ```
 
+### List Conversion Formats Directly from SMILES
+```
+dx.conversion_formats
+```
+
 ## How to use
 _Note: currently, depablo_box is only able to handle the calculation of chemical descriptors. Experimental descriptors already exists within the database (dx.df)_
 ### Get Chemical Descriptors 
