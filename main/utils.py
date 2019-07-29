@@ -50,6 +50,7 @@ def generate_input_files(smiles, format):
     second_level_conversion = {
         # files that need 3 dimension input to calculate
         'Gaussian 98/03 Input': pdb_to_gau
+        # can eventually add more
     }
 
     if format in first_level_conversion.keys():

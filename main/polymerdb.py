@@ -37,7 +37,7 @@ class PDBML:
 		'NumValenceElectrons', 'BalabanJ', 'BertzCT', 'Ipc', 'HallKierAlpha', 'MolLogP', 'MolMR', 'HeavyAtomCount', 
 		'NHOHCount', 'NOCount', 'NumHAcceptors', 'NumHDonors', 'NumHeteroatoms', 'NumRotatableBonds', 'RingCount', 
 		'FractionCSP3', 'TPSA']
-		self.structures = ['Gaussian', 'Protein Data Bank']
+		self.conversion_formats = ["Protein Data Bank", "Gaussian 98/03 Input"]
 		self.ml_methods = ["Support Vector Regression", "Linear Regression", "Ridge Regression", 
 		"Lasso Regression", "Gaussian Process Regression"]
 		# set index as polymer name rather than integer - each name is unique

@@ -12,11 +12,11 @@ dx = PDBML()
 # access depablo_box database as pandas dataframe
 df = dx.df
 
-# calculate descriptors and add to dataframe
+# say we want to calculate these descriptors and add to dataframe
 descriptor_list = ['BalabanJ', 'BertzCT', 'Ipc', 'HallKierAlpha', 'MolLogP', 'MolMR']
 dx.add_descriptors(descriptor_list)
 
-# see if there are any correlations between properties
+# see if there are any correlations between the above properties
 dx.correlation_map(property_list)
 
 # define model arguments
@@ -103,4 +103,25 @@ ml = pickle.load(outpath) # same ml object as above
 results = ml.predict(SOME_NEW_DATA)
 
 
+############################################################################
+#							Generate Quantum Chemistry Files
+############################################################################
+
+"""I want to convert SMILES format into some other format (maybe input files for quantum chemistry codes)"""
+
+from depablo_box import PDBML
+
+# initialize class
+dx = PDBML()
+
+# list all supported conversions
+print(dx.conversion_formats)
+
+# either SMILES format or polymer name
+polymer_identifier = '*C(C*)C'
+conversion_format = 'Gaussian 98/03 Input'
+outpath = '/file/path/your_polymer.xyz'
+
+# writes gaussian codes to outpath
+dx.create_input_file(polymer_identifier, conversion_format, outpath)
 
