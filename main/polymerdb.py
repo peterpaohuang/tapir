@@ -31,7 +31,10 @@ class PDBML:
 
 		self.df = pd.read_csv('depablo_box/polymer_db.csv').replace(na_values, np.nan)
 		# self.df.set_index(["polymer_name"], inplace=True) 
-		self.experimental_descriptors = ["Glass Transition Temp", "Melting Temp", "Density", "Solubility Parameters"]
+		self.experimental_descriptors = ["molar_volume", "density",
+         "solubility_parameter","molar_cohesive_energy", "glass_transition_temperature", "molar_heat_capacity", 
+            "entanglement_molecular_weight", "refraction_index", "thermal_expansion_coefficient", 
+            "repeat_unit_weight", "waals_volume"]
 		self.chemical_descriptors = ['ExactMolWt', 'FpDensityMorgan1', 
 		'FpDensityMorgan2', 'FpDensityMorgan3', 'HeavyAtomMolWt', 'MolWt', 'NumRadicalElectrons', 
 		'NumValenceElectrons', 'BalabanJ', 'BertzCT', 'Ipc', 'HallKierAlpha', 'MolLogP', 'MolMR', 'HeavyAtomCount', 
@@ -47,6 +50,7 @@ class PDBML:
 	def get_smiles_from_identifier(self, polymer_identifier):
 		"""
 		Standarize format of either polymer name or polymer smiles into only smiles format
+		
 		Parameters
 		------------------------
 		polymer_identifier: String

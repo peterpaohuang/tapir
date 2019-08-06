@@ -87,11 +87,11 @@ class polymer_scraper():
                         except:
                             poly_dict[self.columns[prop_cols[0].get_text()]] = prop_cols[2].string.strip()
                     else:
-                        poly_dict[self.columns[prop_cols[0].get_text()]] = 'na'
+                        poly_dict[self.columns[prop_cols[0].get_text()]] = np.nan
                 except: 
                     # when there are not all the right tds - generally seen in index of refraction when value
                     # is none
-                    poly_dict[self.columns[prop_cols[0].get_text()]] = 'na'
+                    poly_dict[self.columns[prop_cols[0].get_text()]] = np.nan
 
         return poly_dict
 
