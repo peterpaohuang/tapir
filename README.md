@@ -166,5 +166,19 @@ results = ml.predict(new_data)
 ```
 ## Scrape PolyInfo for experimental properties
 ```
-
+from depablo_box import polymer_scraper
 ```
+### Initialize scraper
+```
+scraper = polymer_scraper()
+```
+### Start Scraping
+```
+scraper.start()
+```
+### Once Finished, Store Scraped Data
+```
+outpath = /file/path/to/store/FILE.csv
+scraper.store_data(outpath)
+```
+
