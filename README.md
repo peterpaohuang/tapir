@@ -8,7 +8,7 @@
 1. `git clone https://github.com/peterpaohuang/depablo_box.git`
 2. `conda create -c rdkit -n depablo_box_env rdkit`
 3. `conda activate depablo_box_env`
-4. Download [polymer_db.csv](https://drive.google.com/file/d/1FnemmYjg_zolIX2x4uWM4gEmLdRTeUKF/view?usp=sharing)
+4. Download [polymer_db.csv](https://drive.google.com/file/d/1kCwwl5EDDxxooj7ocskpYq6wgsXOrhlk/view?usp=sharing)
 5. Move polymer_db.csv into depablo_box directory
 6. `python setup.py` while inside depablo_box_env conda environment
 
@@ -43,9 +43,33 @@ df.loc[df["smiles"] == smiles]
 ```
 
 ### List Descriptors
+#### Supported Chemical Descriptors
+`dx.chemical_descriptors`
+* ExactMolWt
+* FpDensityMorgan1
+* FpDensityMorgan2
+* FpDensityMorgan3
+* HeavyAtomMolWt
+* MolWt
+* etc
+
+#### Supported Thermo-Physical Descriptors
+`dx.experimental_descriptors`
+* Molar Volume Vm
+* Density ρ
+* Solubility Parameter δ
+* Molar Cohesive Energy Ecoh
+* Glass Transition Temperature Tg
+* Molar Heat Capacity Cp
+* Entanglement Molecular Weight Me
+* Index of Refraction n
+* Coefficient of Thermal Expansion α
+* Molecular Weight of Repeat unit
+* Van-der-Waals Volume VvW
+
+### See distribution of NaN values in database for Thermo-Physical Descriptors
 ```
-dx.chemical_descriptors
-dx.experimental_descriptors
+dx.na_distribution()
 ```
 
 ### List Machine Learning Methods
@@ -83,7 +107,7 @@ dx.add_descriptors(descriptor_list)
 ```
 ### Plot Properties as scatterplot
 ```
-dx.plot_properties(property_x="Tg", property_y="ExactMolWt")
+dx.plot_properties(property_x="glass_transition_temperature", property_y="ExactMolWt")
 ```
 ### Plot Many Properties as Pairplot
 ```
@@ -91,7 +115,7 @@ dx.plot_many(property_list)
 ```
 ### Get Correlation Between Two Properties
 ```
-dx.property_correlation("Tm", "HeavyAtomMolWt")
+dx.property_correlation("molar_heat_capacity", "HeavyAtomMolWt")
 ```
 ### Plot Correlation Heatmap of Many Properties
 ```
@@ -104,8 +128,8 @@ dx.export_csv(outpath)
 ## Initialize Model Training
 ```
 # input_properties must have already been added to PDBML().df
-input_properties = ["Tm", "ExactMolWt", "HeavyAtomMolWt"]
-output_property = "Tg"
+input_properties = ["molar_heat_capacity", "ExactMolWt", "HeavyAtomMolWt"]
+output_property = "solubility_parameter"
 na_strategy = "mean"
 ml = model(df, input_properties, output_property, na_strategy=na_strategy)
 ```
@@ -145,7 +169,21 @@ import pickle
 ml = pickle.load(outpath)
 results = ml.predict(new_data)
 ```
-## Scrape PolyInfo for experimental properties
+## Scrape CROW Polymer DB for experimental thermo-physical properties
+```
+from depablo_box import polymer_scraper
+```
+### Initialize scraper
+```
+scraper = polymer_scraper()
+```
+### Start Scraping
+```
+scraper.start()
+```
+### Once Finished, Store Scraped Data
+```
+outpath = /file/path/to/store/FILE.csv
+scraper.store_data(outpath)
 ```
 
-```
