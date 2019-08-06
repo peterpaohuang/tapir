@@ -87,7 +87,8 @@ _Note: currently, depablo_box is only able to handle the calculation of chemical
 ### Get Chemical Descriptors 
 ```
 descriptor_list = ["ExactMolWt", "HeavyAtomMolWt"]
-descriptor_df = dx.get_descriptors("Polyethylene", descriptor_list)
+polymer_identifier = "C=CC(=O)NC(C)(C)C" # can also be the polymer_name
+descriptor_df = dx.get_descriptors(polymer_identifier, descriptor_list)
 ```
 
 ### Generate Input Files for Quantum Chemistry Codes
@@ -95,7 +96,7 @@ descriptor_df = dx.get_descriptors("Polyethylene", descriptor_list)
 1. `Protein Data Bank`
 2. `Gaussian 98/03 Input`
 ```
-polymer_identifier = '*C(C*)C'
+polymer_identifier = '*C(C*)C' # can also be the polymer_name
 conversion_format = 'Gaussian 98/03 Input'
 outpath = '/file/path/your_polymer.xyz'
 dx.create_input_file(polymer_identifier, conversion_format, outpath)
