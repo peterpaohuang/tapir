@@ -164,7 +164,7 @@ import pickle
 ml = pickle.load(outpath)
 results = ml.predict(new_data)
 ```
-## Scrape PolyInfo for experimental properties
+## Scrape CROW Polymer DB for experimental thermo-physical properties
 ```
 from depablo_box import polymer_scraper
 ```
