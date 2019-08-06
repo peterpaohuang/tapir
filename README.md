@@ -8,7 +8,7 @@
 1. `git clone https://github.com/peterpaohuang/depablo_box.git`
 2. `conda create -c rdkit -n depablo_box_env rdkit`
 3. `conda activate depablo_box_env`
-4. Download [polymer_db.csv](https://drive.google.com/file/d/1FnemmYjg_zolIX2x4uWM4gEmLdRTeUKF/view?usp=sharing)
+4. Download [polymer_db.csv](https://drive.google.com/file/d/1kCwwl5EDDxxooj7ocskpYq6wgsXOrhlk/view?usp=sharing)
 5. Move polymer_db.csv into depablo_box directory
 6. `python setup.py` while inside depablo_box_env conda environment
 
