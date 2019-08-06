@@ -43,10 +43,29 @@ df.loc[df["smiles"] == smiles]
 ```
 
 ### List Descriptors
-```
-dx.chemical_descriptors
-dx.experimental_descriptors
-```
+#### Supported Chemical Descriptors
+`dx.chemical_descriptors`
+* ExactMolWt
+* FpDensityMorgan1
+* FpDensityMorgan2
+* FpDensityMorgan3
+* HeavyAtomMolWt
+* MolWt
+* etc
+
+#### Supported Experiment Descriptors
+`dx.experimental_descriptors`
+* Molar Volume Vm
+* Density ρ
+* Solubility Parameter δ
+* Molar Cohesive Energy Ecoh
+* Glass Transition Temperature Tg
+* Molar Heat Capacity Cp
+* Entanglement Molecular Weight Me
+* Index of Refraction n
+* Coefficient of Thermal Expansion α
+* Molecular Weight of Repeat unit
+* Van-der-Waals Volume VvW
 
 ### List Machine Learning Methods
 ```
