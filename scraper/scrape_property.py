@@ -1,260 +1,219 @@
-'''
-PoLyInfo Database Scraper - scrape_polyinfo.py
-Author: James S. Peerless
-        Yingling Group
-        NC State University
-'''
-
-###############################################################################
-#        Initialization                                                       #
-###############################################################################
-
 import time
 import sys
 import re
 import requests
+
+import pandas as pd
+import numpy as np
+
 from bs4 import BeautifulSoup
 from math import ceil
-import pandas as pd
 
-class scraper:
-    def __init__(self, email, password):
-        self.login_info = {
-            "IDToken1" : email,
-            "IDToken2" : password,
-            "IDToken0" : "",
+class polymer_scraper():
+    """
+    Scraper is only for CROW Polymer Properties Database
+    """
+
+    def __init__(self):
+        self.columns = {
+            "Molar Volume Vm": "molar_volume", 
+            "Density ρ": "density",
+            "Solubility Parameter δ": "solubility_parameter",
+            "Molar Cohesive Energy Ecoh": "molar_cohesive_energy",
+            "Glass Transition Temperature Tg": "glass_transition_temperature",
+            "Molar Heat Capacity Cp": "molar_heat_capacity",
+            "Entanglement Molecular Weight Me": "entanglement_molecular_weight",
+            "Index of Refraction n": "refraction_index",
+            "Coefficient of Thermal Expansion α": "thermal_expansion_coefficient",
+            "Molecular Weight of Repeat unit": "repeat_unit_weight",
+            "Van-der-Waals Volume VvW": "waals_volume"
         }
+        self.df = pd.DataFrame(columns=["polymer_name", "smiles", "molar_volume", "density",
+         "solubility_parameter","molar_cohesive_energy", "glass_transition_temperature", "molar_heat_capacity", 
+            "entanglement_molecular_weight", "refraction_index", "thermal_expansion_coefficient", 
+            "repeat_unit_weight", "waals_volume"])
 
-    # ###############################################################################
-    # #        Functions                                                            #
-    # ###############################################################################
+        self.ses_req = requests.Session()
 
-    # # Create new session and log into PoLyInfo
-    # def polyinfo_login(self):
-    #     global t_last_login
-    #     # Create session object
-    #     ses_req = requests.Session()
+    def extract_polymer_properties(self, polymer_url):
+        """
+        From an individual polymer site, extract the thermo-physical properties in self.columns
 
-    #     # Login to PoLyInfo search page
-    #     print 'Logging in to PoLyInfo...'
-    #     login_url = "https://login-matnavi.nims.go.jp/sso/UI/Login?goto="\
-    #             + "http%3A%2F%2Fpolymer.nims.go.jp%3A80%2FPoLyInfo%2Fcgi-bin%2Fp"\
-    #             +"-search.cgi"
-    #     login_result = ses_req.post(login_url, data = self.login_info)
-    #     if 'Authentication failed.' in login_result.content:
-    #         sys.exit("ERROR: PoLyInfo login unsuccessful."\
-    #                  + " Check username and/or password!")
-    #     print 'Login succcessful!\n'
-    #     sys.stdout.flush()
-    #     t_last_login = time.time()
-    #     return ses_req
+        Parameters
+        ---------------------------
+        polymer_url: String
+            url site for individual polymer
 
-    # # Get table from a PoLyInfo URL for C-count or multiple polymer pages.
-    # def get_pi_table(self, url):
-    #     page = session_requests.get(url)
-    #     soup = BeautifulSoup(page.content,'lxml')
-    #     try:
-    #         table = soup.find('table',bgcolor='#808080')
-    #     except IndexError:
-    #         print 'Unexpected format at %s. Skipping...' % (url)
-    #         table = BeautifulSoup('','lxml')
-    #     return table
+        Return 
+        ---------------------------
+        poly_dict: {COLUMN_NAME: NUMERICAL_VALUE}
+            dictionary of with keys as the column names in self.df 
+            and the corresponding numerical value
+        """
 
-    # # Get table from single-polymer Tg pages
-    # def get_Tg_table(self, url,page_num):
-    #     payload = { "page" : str(page_num+1) }
-    #     page = session_requests.get(url, params = payload)
-    #     soup = BeautifulSoup(page.content,'lxml')
-    #     try:
-    #         table = soup.find_all('table',bgcolor='#808080')[1]
-    #     except IndexError:
-    #         print '\tUnexpected format on page %i. Skipping...' % (page_num+1)
-    #         table = BeautifulSoup('','lxml')
-    #     return table
+        poly_dict = {}
+        single_poly_url = "https://polymerdatabase.com/polymers/{}".format(polymer_url)
 
-    # # Return list of floats contained within a string
-    # def get_nums(self, s):
-    #     num_str = re.findall("[-+]?[.]?[\d]+(?:,\d\d\d)*[\.]?\d*(?:[eE][-+]?\d+)?",\
-    #                           s)
-    #     nums = []
-    #     for num in num_str:
-    #         nums.append(float(num))
-    #     if nums == []:
-    #         nums = [False]
-    #     return nums
+        page = self.ses_req.get(single_poly_url)
+        soup = BeautifulSoup(page.content,'lxml')
 
-    # # Return the number (8 digits or less) immediately after the first instance of 
-    # # some string within a larger string (e.g. an html page)
-    # def val_after_str(self, split_s,page_s):
-    #     val_str = page_s.split(split_s,1)[1][0:9]
-    #     val = get_nums(val_str)[0]
-    #     return val
+        poly_dict["polymer_name"] = soup.title.string
 
-    # ###############################################################################
-    # #        Get Polymer Classes                                                  #
-    # ###############################################################################
+        try:
+            polymer_identifiers = soup.find_all("div", class_="datagrid")[1]
+        except:
+            return None
 
-    # def start(outfile, property_class, property):
-    #     t_start = time.time()
+        try:
+            poly_dict["smiles"] = polymer_identifiers.find_all('tr')[2].find_all('td')[1].string.strip()
+        except:
+            poly_dict["smiles"] = np.nan
 
-    #     session_requests = polyinfo_login()
+        polymer_properties = soup.find_all("div", class_="datagrid")[2].find_all('tr')
+        for x, row in enumerate(polymer_properties):
+            if x > 0:
+                prop_cols = row.find_all('td')
+                # preferred values are top priority - if there are no values there, take value/range
+                try:
+                    if prop_cols[3].string is not None:
+                        if "Average" in prop_cols[3].string:
+                            poly_dict[self.columns[prop_cols[0].get_text()]] = float(prop_cols[3].string.
+                                split(":")[-1].strip())
+                        else:
+                            poly_dict[self.columns[prop_cols[0].get_text()]] = float(prop_cols[3].string.strip())
+                    elif prop_cols[2].string is not None:
+                        try:
+                            poly_dict[self.columns[prop_cols[0].get_text()]] = float(prop_cols[2].string.strip())
+                        except:
+                            poly_dict[self.columns[prop_cols[0].get_text()]] = prop_cols[2].string.strip()
+                    else:
+                        poly_dict[self.columns[prop_cols[0].get_text()]] = 'na'
+                except: 
+                    # when there are not all the right tds - generally seen in index of refraction when value
+                    # is none
+                    poly_dict[self.columns[prop_cols[0].get_text()]] = 'na'
 
-    #     print 'Collecting polymer class list...'
-    #     sys.stdout.flush()
-    #     all_classes = []
-    #     class_abbr = {}
-    #     eb_url = "http://polymer.nims.go.jp/PoLyInfo/cgi-bin/p-easy-ptable.cgi"
-    #     eb_table = get_pi_table(eb_url)
-    #     for row in eb_table.find_all('tr'):
-    #         first_cell = row.find('td',class_='small_border')
-    #         if first_cell:
-    #             all_classes.append(str(first_cell.find('a').contents[0]))
-    #             class_abbr[all_classes[-1]] = first_cell.find('a')['href'][-9:-5]
-    #     print '%i polymer classes identified.\n' % (len(all_classes))
-    #     sys.stdout.flush()
+        return poly_dict
 
-    #     ###############################################################################
-    #     #        Polymer Class Loop                                                   #
-    #     ###############################################################################
+    def extract_polymers_from_class(self, polymer_class):
+        """
+        From polymer class site that has a list of polymers in that class, 
+        extract the url for each individual polymer
 
-    #     # Initialize dataframe
-    #     polyinfo_df = pd.DataFrame(data = { 'p_class' : [],
-    #                                 'class_abbr' : [],
-    #                                 'name' : [],
-    #                                 'pid' : [],
-    #                                 'sid' : [],
-    #                                 'Tg' : [],
-    #                                 'Mn': [] })
+        Parameters
+        ---------------------------
+        polymer_class: String
+            url site for polymer class
 
-    #     # Loop through each polymer class
-    #     for class_i in all_classes:
-    #         print 'Identifying candidate for %s class...' % (class_i)
-    #         abbr_i = class_abbr[class_i]
+        Return 
+        ---------------------------
+        polymer_urls: [String]
+            list of polymer url site
 
-    #         # Re-login if necessary
-    #         if (time.time()-t_last_login) > 7200.:
-    #             print 'Session refresh required...'
-    #             session_requests = polyinfo_login()
+        """
 
-    #         # Find C Count value with most Tg data points available
-    #         class_url = 'http://polymer.nims.go.jp/PoLyInfo/cgi-bin/p-easy-ptable.cgi?'\
-    #                     + 'H=Thermal&vtype=points&V=cn&vpclass=' + abbr_i + '&vcn='
-    #         class_table = get_pi_table(class_url)
-    #         Tg_datapoints = []
-    #         C_counts = []
-    #         for row in class_table.find_all('tr'):
-    #             if row.find('td',class_='small_border'):
-    #                 cells = row.find_all('td')
-    #                 C_counts.append(cells[0].find('a').contents[0])
-    #                 Tg_dps_i = cells[1].contents[0]
-    #                 if Tg_dps_i == '-':
-    #                     Tg_datapoints.append(0)
-    #                 else:
-    #                     Tg_datapoints.append(int(Tg_dps_i))
-    #         most_Tg_dps = max(Tg_datapoints)
-    #         tgt_C_count = C_counts[Tg_datapoints.index(most_Tg_dps)]
-
-    #         # Find polymer ID, name, and Tg datatable url with most datapoints available
-    #         c_count_url = 'http://polymer.nims.go.jp/PoLyInfo/cgi-bin/p-easy-ptable.'\
-    #                     + 'cgi?H=Thermal&vtype=points&V=pi&vpclass=' + abbr_i \
-    #                     + '&vcn=' + abbr_i + '-' + tgt_C_count
-    #         c_count_table = get_pi_table(c_count_url)
-    #         c_count_pid = []
-    #         c_count_names = []
-    #         Tg_datapoints = []
-    #         Tg_urls = []
-    #         for row in c_count_table.find_all('tr'):
-    #             if row.find('td',class_='small_border'):
-    #                 cells = row.find_all('td')
-    #                 c_count_pid.append(cells[0].find('a')['href'][-7:])
-    #                 c_count_names.append(cells[0].find('a').contents[0])
-    #                 Tg_dps_i = cells[1].find('a')
-    #                 if Tg_dps_i:
-    #                     Tg_datapoints.append(int(Tg_dps_i.contents[0]))
-    #                     Tg_urls.append( 'http://polymer.nims.go.jp' + Tg_dps_i['href'])
-    #                 else:
-    #                     Tg_datapoints.append(0)
-    #                     Tg_urls.append('')
-    #         most_Tg_dps = max(Tg_datapoints)
-    #         pid_i = str(c_count_pid[Tg_datapoints.index(most_Tg_dps)])
-    #         poly_name_i = str(c_count_names[Tg_datapoints.index(most_Tg_dps)])
-    #         tgt_Tg_url = Tg_urls[Tg_datapoints.index(most_Tg_dps)]
-    #         if pid_i in polyinfo_df.pid.tolist():
-    #             print 'Polymer %s (PID=%s) already compiled.' % (poly_name_i, pid_i)
-    #             continue
-    #         print( 'Candidate identified.\n' 
-    #               '\tName: %s\n'
-    #               '\tPID: %s\n'
-    #               '\t%i Tg Measurements \n' 
-    #                % (poly_name_i, pid_i, most_Tg_dps))
-    #         sys.stdout.flush()
-
-    #         # Compile list of Sample ID's of neat resin from Tg datatable
-    #         print '\tCompiling neat resin sample IDs...'
-    #         n_pages = int(ceil(most_Tg_dps/20.))
-    #         sid_list = []
-    #         for c_page in range(n_pages):
-    #             print '\t...Page %i of %i...' % (c_page + 1, n_pages)
-    #             sys.stdout.flush()
-    #             Tg_table = get_Tg_table(tgt_Tg_url,c_page)
-    #             for row in Tg_table.find_all('tr'):
-    #                 if row.find('td',class_='small_border'):
-    #                     cells = row.find_all('td')
-    #                     row_sid = str(cells[1].find('a').contents[0])
-    #                     if cells[2].text == "Neat resin" and "ca" not in cells[4].text:
-    #                         sid_list.append(row_sid)
-    #         sid_list = list(set(sid_list))
-    #         print '\t%i unique neat resin samples identified.\n' % (len(sid_list))
-            
-    #         # Extract Tg and Mn from sample pages
-    #         print '\tScanning samples...'
-    #         sys.stdout.flush()
-    #         n_poly_points = 0
-    #         for sid_i in sid_list:
-    #             samp_url = 'http://polymer.nims.go.jp/PoLyInfo/cgi-bin/ho-id-search.cgi?'\
-    #                 + 'PID=' + pid_i + '&SID=' + sid_i + '&layout=info'
-    #             samp_page = session_requests.get(samp_url)
-    #             samp_soup = BeautifulSoup(samp_page.content,'lxml')
-    #             # Extract Tg
-    #             for prop in samp_soup.find_all('li'):
-    #                 if str(prop.contents[0]) == " Glass transition temp.\n      ":
-    #                     for detail in prop.find_all('ul'):
-    #                         Tg_str = detail.find_all('li')[0].contents[0]
-    #                         Tg_K = get_nums(Tg_str)[-1]
-    #                         if Tg_K and '[C]' in Tg_str:
-    #                             Tg_K = Tg_K + 273.15
-    #             # Extract Mn
-    #             if 'Mn=' in samp_page.content:
-    #                 # Calculate from Molecular Weight and Mw/Mn if necessary
-    #                 if 'Mw/Mn=' in samp_page.content and 'Mw=' in samp_page.content:
-    #                     Mw = val_after_str('Mw=', samp_page.content)
-    #                     Mw_ovr_Mn = val_after_str('Mw/Mn=', samp_page.content)
-    #                     Mn_i = Mw/Mw_ovr_Mn
-    #                 # Use Mn if given, but make sure it's Mn and not Mw/Mn
-    #                 else:
-    #                     Mn_tmp = val_after_str('Mn=', samp_page.content)
-    #                     if Mn_tmp > 10.:
-    #                         Mn_i = Mn_tmp
-    #             # Append to lists if values found and reset
-    #             if Mn_i and Tg_K:
-    #                 polyinfo_df = polyinfo_df.append({ 'p_class' : class_i,
-    #                                                    'class_abbr' : abbr_i,
-    #                                                    'name' : poly_name_i,
-    #                                                    'pid' : pid_i,
-    #                                                    'sid' : sid_i,
-    #                                                    'Tg' : Tg_K,
-    #                                                    'Mn': Mn_i },
-    #                                                    ignore_index = True )
-    #                 Mn_i = False
-    #                 Tg_K = False
-    #                 n_poly_points = n_poly_points + 1
-    #         print '\tSample scan complete. %i datapoints added for %s.\n' % \
-    #                 (n_poly_points,poly_name_i)
-    #         sys.stdout.flush()
-
-
-    #     denoument(outfile, polyinfo_df, t_start)
-
-
-
+        polymer_urls = []
         
+        class_url = "https://polymerdatabase.com/polymer%20index/{}".format(polymer_class)
+        page = self.ses_req.get(class_url)
+        soup = BeautifulSoup(page.content,'lxml')
+
+        try:
+            polymer_list = soup.find_all("ul", class_="auto-style13")[0].find_all('li')
+        except:
+            # error when polymer_class url is "#.html"
+            return None
+        for polymer in polymer_list:
+            polymer_url = polymer.a.get('href').split('/')[-1]
+            polymer_urls.append(polymer_url.strip())
+
+        return polymer_urls
+
+    def extract_classes(self, abc_site_url):
+        """
+        Parameters
+        ---------------------------
+        abc_site_url: String
+            url site for index letters (A-B, C-D, etc)
+
+        Return 
+        ---------------------------
+        polymer_classes: [String]
+            list of polymer classes' url site
+
+        """
+
+        page = self.ses_req.get(abc_site_url)
+        soup = BeautifulSoup(page.content,'lxml')
+
+        two_columns = soup.find_all('td')
+
+        polymer_classes = []
+
+        for column in two_columns:
+            for p in column.find_all('p'): 
+                if p.a is not None:
+                    class_url = p.a.get('href').split('/')[-1]
+                    if class_url != "#": # remove tds with dash rather than a polymer class
+                        polymer_classes.append(class_url.strip())
+
+        return polymer_classes
+
+    def start(self):
+        """
+        Start scraping process
+
+        Layout of CROW Polymer Database
+        A-B,C-D...
+            -> Polymer Classes List
+                -> Polymer List
+                    -> Thermo-physical Properties for individual polymer
+
+        """
+
+        abc_site_urls = ["https://polymerdatabase.com/home.html", 
+        "https://polymerdatabase.com/polymer%20index/C-D%20index.html", 
+        "https://polymerdatabase.com/polymer%20index/E-F%20index.html",
+        "https://polymerdatabase.com/polymer%20index/G-L%20index.html",
+        "https://polymerdatabase.com/polymer%20index/M-P%20index.html",
+        "https://polymerdatabase.com/polymer%20index/S-V%20index.html"]
+
+        print("Scraping started...")
+        polymers_scraped = 0
+        start_time = time.time()
+
+        for abc_site_url in abc_site_urls:
+            polymer_classes = self.extract_classes(abc_site_url)
+
+            for polymer_class in polymer_classes:
+                polymer_urls = self.extract_polymers_from_class(polymer_class)
+
+                if polymer_urls is not None:
+                    for polymer_url in polymer_urls:
+                        # log number of polymers scraped
+                        if polymers_scraped and polymers_scraped % 100 == 0:
+                            print("{} polymers scraped in {} seconds".format(polymers_scraped, 
+                                int(time.time()-start_time)))
+
+                        poly_dict = self.extract_polymer_properties(polymer_url)
+                        if poly_dict is not None:
+                            self.df = self.df.append(poly_dict, ignore_index=True)
+                            polymers_scraped += 1
+
+    def store_data(self, outpath):
+        """
+        Store scraped data from CROW on a CSV file to outpath
+
+        Parameters
+        ---------------------------
+        outpath: String
+            outpath to store CSV file
+
+        """
+
+        self.df.to_csv(outpath)
+
+# scraper = polymer_scraper()
+# scraper.start()
+
+
