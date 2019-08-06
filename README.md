@@ -69,7 +69,7 @@ df.loc[df["smiles"] == smiles]
 
 ### See distribution of NaN values in database for Thermo-Physical Descriptors
 ```
-dx.na_distribution
+dx.na_distribution()
 ```
 
 ### List Machine Learning Methods
