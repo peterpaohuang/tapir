@@ -53,7 +53,7 @@ df.loc[df["smiles"] == smiles]
 * MolWt
 * etc
 
-#### Supported Experiment Descriptors
+#### Supported Thermo-Physical Descriptors
 `dx.experimental_descriptors`
 * Molar Volume Vm
 * Density ρ
@@ -66,6 +66,11 @@ df.loc[df["smiles"] == smiles]
 * Coefficient of Thermal Expansion α
 * Molecular Weight of Repeat unit
 * Van-der-Waals Volume VvW
+
+### See distribution of NaN values in database for Thermo-Physical Descriptors
+```
+dx.na_distribution
+```
 
 ### List Machine Learning Methods
 ```
@@ -102,7 +107,7 @@ dx.add_descriptors(descriptor_list)
 ```
 ### Plot Properties as scatterplot
 ```
-dx.plot_properties(property_x="Tg", property_y="ExactMolWt")
+dx.plot_properties(property_x="glass_transition_temperature", property_y="ExactMolWt")
 ```
 ### Plot Many Properties as Pairplot
 ```
@@ -110,7 +115,7 @@ dx.plot_many(property_list)
 ```
 ### Get Correlation Between Two Properties
 ```
-dx.property_correlation("Tm", "HeavyAtomMolWt")
+dx.property_correlation("molar_heat_capacity", "HeavyAtomMolWt")
 ```
 ### Plot Correlation Heatmap of Many Properties
 ```
@@ -123,8 +128,8 @@ dx.export_csv(outpath)
 ## Initialize Model Training
 ```
 # input_properties must have already been added to PDBML().df
-input_properties = ["Tm", "ExactMolWt", "HeavyAtomMolWt"]
-output_property = "Tg"
+input_properties = ["molar_heat_capacity", "ExactMolWt", "HeavyAtomMolWt"]
+output_property = "solubility_parameter"
 na_strategy = "mean"
 ml = model(df, input_properties, output_property, na_strategy=na_strategy)
 ```
