@@ -20,7 +20,7 @@ import seaborn as sns
 from depablo_box.main.utils import NA_encoder,calculate_descriptor, generate_input_files
 
 class PDBML:
-	def __init__(self, na_values="na"):
+	def __init__(self, na_values=["na", ""]):
 		"""
 		Parameters
 		------------------------
@@ -50,7 +50,7 @@ class PDBML:
 	def get_smiles_from_identifier(self, polymer_identifier):
 		"""
 		Standarize format of either polymer name or polymer smiles into only smiles format
-		
+
 		Parameters
 		------------------------
 		polymer_identifier: String
@@ -165,9 +165,13 @@ class PDBML:
 		None
 		"""
 
-		for prop in property_list:
-			if prop not in list(self.df):
-				self.add_descriptors([prop])
+		try:
+			for prop in property_list:
+				if prop not in list(self.df):
+					self.add_descriptors([prop])
+		except:
+			raise KeyError("One or multiple of your input properties either do not match any existing\
+				thermo-physical properties in dx.df or property does not match supported chemical descriptors")
 
 	def plot_properties(self, property_x=None, property_y=None):
 		"""
@@ -188,7 +192,7 @@ class PDBML:
 		self.property_existence([property_x, property_y])
 
 		fig, ax = plt.subplots()
-		self.df.plot(kind='scatter',x=property_x,y=property_y,color='red', ax=ax)
+		plt.plot(self.df[property_x], self.df[property_y], 'o-', ax=ax)
 		fig.tight_layout()
 		plt.show()
 
@@ -250,6 +254,18 @@ class PDBML:
 		corr = self.df[property_list].corr()
 		sns.heatmap(corr, mask=np.zeros_like(corr, dtype=np.bool), cmap=sns.diverging_palette(220, 10, 
 			as_cmap=True), annot=True, ax=ax)
+		fig.tight_layout()
+		plt.show()
+
+	def na_distribution(self):
+		fig, ax = plt.subplots()
+		nan_df = pd.DataFrame()
+		num_nan = [self.df[x].isna().sum() for x in self.df.columns]
+
+		nan_df["num_nan"] = num_nan
+		nan_df["column_id"] = self.df.columns 
+		nan_df.plot(x="column_id", y="num_nan", kind="bar", ax=ax)
+
 		fig.tight_layout()
 		plt.show()
 

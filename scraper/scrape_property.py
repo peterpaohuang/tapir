@@ -85,7 +85,8 @@ class polymer_scraper():
                         try:
                             poly_dict[self.columns[prop_cols[0].get_text()]] = float(prop_cols[2].string.strip())
                         except:
-                            poly_dict[self.columns[prop_cols[0].get_text()]] = prop_cols[2].string.strip()
+                            poly_dict[self.columns[prop_cols[0].get_text()]] = float(prop_cols[2].string.
+                                strip().split()[-1])
                     else:
                         poly_dict[self.columns[prop_cols[0].get_text()]] = np.nan
                 except: 
@@ -215,5 +216,5 @@ class polymer_scraper():
 
 # scraper = polymer_scraper()
 # scraper.start()
-
+# scraper.store_data("polymer_db.csv")
 
