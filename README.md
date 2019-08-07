@@ -158,7 +158,7 @@ results = ml.predict(new_data)
 ### Plot Feature Importances
 _Note: model type Gaussian Process Regression does not support feature importances_
 ```
-ml.feature_importances()
+ml.feature_importance()
 ```
 ### Export Trained Model as Pickle File
 ```
