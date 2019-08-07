@@ -167,7 +167,8 @@ ml.export_fitted_model(outpath)
 ### Load Pickle File as Trained Model
 ```
 import pickle
-ml = pickle.load(outpath)
+with open(outpath, "rb") as f:
+  ml = pickle.load(f)
 results = ml.predict(new_data)
 ```
 ## Scrape CROW Polymer DB for experimental thermo-physical properties
