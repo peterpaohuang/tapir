@@ -8,7 +8,7 @@
 1. `git clone https://github.com/peterpaohuang/depablo_box.git`
 2. `conda create -c rdkit -n depablo_box_env rdkit`
 3. `conda activate depablo_box_env`
-4. Download [polymer_db.csv](https://drive.google.com/file/d/1Nqs-HENgd7BPtAv9ngfRKe6BOwXQs-bR/view?usp=sharing)
+4. Download [polymer_db.csv](https://drive.google.com/file/d/1--OtZ7XLnx_b4n9--5E7b7NqjXOByXGw/view?usp=sharing)
 5. Move polymer_db.csv into depablo_box directory
 6. `python setup.py` while inside depablo_box_env conda environment
 
@@ -87,7 +87,8 @@ _Note: currently, depablo_box is only able to handle the calculation of chemical
 ### Get Chemical Descriptors 
 ```
 descriptor_list = ["ExactMolWt", "HeavyAtomMolWt"]
-descriptor_df = dx.get_descriptors("Polyethylene", descriptor_list)
+polymer_identifier = "C=CC(=O)NC(C)(C)C" # can also be the polymer_name
+descriptor_df = dx.get_descriptors(polymer_identifier, descriptor_list)
 ```
 
 ### Generate Input Files for Quantum Chemistry Codes
@@ -95,7 +96,7 @@ descriptor_df = dx.get_descriptors("Polyethylene", descriptor_list)
 1. `Protein Data Bank`
 2. `Gaussian 98/03 Input`
 ```
-polymer_identifier = '*C(C*)C'
+polymer_identifier = '*C(C*)C' # can also be the polymer_name
 conversion_format = 'Gaussian 98/03 Input'
 outpath = '/file/path/your_polymer.xyz'
 dx.create_input_file(polymer_identifier, conversion_format, outpath)
@@ -157,7 +158,7 @@ results = ml.predict(new_data)
 ### Plot Feature Importances
 _Note: model type Gaussian Process Regression does not support feature importances_
 ```
-ml.feature_importances()
+ml.feature_importance()
 ```
 ### Export Trained Model as Pickle File
 ```
@@ -166,7 +167,8 @@ ml.export_fitted_model(outpath)
 ### Load Pickle File as Trained Model
 ```
 import pickle
-ml = pickle.load(outpath)
+with open(outpath, "rb") as f:
+  ml = pickle.load(f)
 results = ml.predict(new_data)
 ```
 ## Scrape CROW Polymer DB for experimental thermo-physical properties
