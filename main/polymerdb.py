@@ -196,7 +196,7 @@ class PDBML:
 		self.property_existence([property_x, property_y])
 
 		fig, ax = plt.subplots()
-		plt.plot(self.df[property_x], self.df[property_y], 'o')
+		sns.regplot(x=self.df[property_x], y=self.df[property_y])
 		fig.tight_layout()
 		plt.show()
 
@@ -272,6 +272,8 @@ class PDBML:
 
 		fig.tight_layout()
 		plt.show()
+		# print number of na values in each column
+		print(self.df.isnull().sum())
 
 	def export_csv(self, outpath):
 		"""
