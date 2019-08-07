@@ -16,7 +16,7 @@ from sklearn.gaussian_process import GaussianProcessRegressor
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, r2_score
 
-from depablo_box.main.utils import NA_encoder,calculate_descriptor
+from depablo_box.main.utils import NA_encoder
 
 class model:
 	def __init__(self, df, input_properties, output_property, na_strategy="mean"):
@@ -50,6 +50,7 @@ class model:
 			model algorithm to train data on 
 
 		"""
+
 		algorithms = {
 			"Support Vector Regression": svm.SVR(kernel="linear"),
 			"Linear Regression": linear_model.LinearRegression(),
@@ -58,19 +59,22 @@ class model:
 			"Gaussian Process Regression": GaussianProcessRegressor()
 		}
 
-		encoder = NA_encoder(numerical_strategy=self.na_strategy)
-		self.df = NA_encoder().fit_transform(self.df)
+		# encoder = NA_encoder(numerical_strategy=self.na_strategy)
+		# self.df = NA_encoder().fit_transform(self.df)
+		print("Imputing NaN values...")
+		self.df = self.df.fillna(self.df.mean())
 		X = self.df[self.input_properties]
 		y = self.df[self.output_property]
 
 		X_train, X_test, y_train, y_test = train_test_split(X,y,test_size=0.2)
 
-
+		print("Training...")
 		regressor = algorithms[model_type]
 		regressor.fit(X_train, y_train)
 
 		self.r_2 = regressor.score(X_test, y_test)
 		self.trained_model = regressor
+		print("Finished")
 
 	def predict(self, input_properties):
 		"""
@@ -86,7 +90,7 @@ class model:
 
 		"""
 
-		return self.trained_model.predict(input_properties)
+		return self.trained_model.predict(input_properties).tolist()
 
 	def export_fitted_model(self,outpath):
 		"""

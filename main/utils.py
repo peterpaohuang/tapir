@@ -95,7 +95,7 @@ def calculate_descriptor(smiles, descriptor):
 
 class NA_encoder():
 
-    """Encodes missing values for numericalfeatures.
+    """Encodes missing values for numerical features.
 
     Several strategies are possible in each case.
 

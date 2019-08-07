@@ -30,6 +30,10 @@ class PDBML:
 
 
 		self.df = pd.read_csv('depablo_box/polymer_db.csv').replace(na_values, np.nan)
+		# remove all no named columns in DB
+		if 'Unnamed: 0' in self.df.columns:
+			self.df.drop(['Unnamed: 0'], axis=1, inplace=True)
+
 		# self.df.set_index(["polymer_name"], inplace=True) 
 		self.experimental_descriptors = ["molar_volume", "density",
          "solubility_parameter","molar_cohesive_energy", "glass_transition_temperature", "molar_heat_capacity", 
@@ -192,7 +196,7 @@ class PDBML:
 		self.property_existence([property_x, property_y])
 
 		fig, ax = plt.subplots()
-		plt.plot(self.df[property_x], self.df[property_y], 'o-', ax=ax)
+		plt.plot(self.df[property_x], self.df[property_y], 'o')
 		fig.tight_layout()
 		plt.show()
 

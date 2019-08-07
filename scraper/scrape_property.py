@@ -65,7 +65,9 @@ class polymer_scraper():
             return None
 
         try:
-            poly_dict["smiles"] = polymer_identifiers.find_all('tr')[2].find_all('td')[1].string.strip()
+            smiles_string = polymer_identifiers.find_all('tr')[2].find_all('td')[1].string.strip()
+            result = re.sub("\{.*?\}", "", smiles_string)
+            poly_dict["smiles"] = result
         except:
             poly_dict["smiles"] = np.nan
 
@@ -86,7 +88,7 @@ class polymer_scraper():
                             poly_dict[self.columns[prop_cols[0].get_text()]] = float(prop_cols[2].string.strip())
                         except:
                             poly_dict[self.columns[prop_cols[0].get_text()]] = float(prop_cols[2].string.
-                                strip().split()[-1])
+                                strip().split()[-1]) # remove any extraneous ≥ symbols
                     else:
                         poly_dict[self.columns[prop_cols[0].get_text()]] = np.nan
                 except: 
