@@ -131,7 +131,7 @@ dx.export_csv(outpath)
 # input_properties must have already been added to PDBML().df
 input_properties = ["molar_heat_capacity", "ExactMolWt", "HeavyAtomMolWt"]
 output_property = "solubility_parameter"
-na_strategy = "mean"
+na_strategy = "remove"
 ml = model(df, input_properties, output_property, na_strategy=na_strategy)
 ```
 ### Train Model
