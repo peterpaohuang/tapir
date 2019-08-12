@@ -8,7 +8,7 @@
 1. `git clone https://github.com/peterpaohuang/depablo_box.git`
 2. `conda create -c rdkit -n depablo_box_env rdkit`
 3. `conda activate depablo_box_env`
-4. Download [polymer_db.csv](https://drive.google.com/file/d/1--OtZ7XLnx_b4n9--5E7b7NqjXOByXGw/view?usp=sharing)
+4. Download [polymer_db.csv](https://drive.google.com/file/d/1vh7uhAG-K6P4OrjoJpM5dAgaOyjrw32Z/view?usp=sharing)
 5. Move polymer_db.csv into depablo_box directory
 6. `python setup.py` while inside depablo_box_env conda environment
 
@@ -35,11 +35,17 @@ df["polymer_name"]
 # list only smiles
 df["smiles"]
 
+# list only inchi keys
+df["inchi"]
+
 # retrieve polymer row by polymer_name
 df.loc[df["polymer_name"] == polymer_name]
 
 # retrieve polymer row by smiles
 df.loc[df["smiles"] == smiles]
+
+# retrieve polymer row by inchi key
+df.loc[df["inchi"] = inchi_key]
 ```
 
 ### List Descriptors
