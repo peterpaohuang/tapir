@@ -27,6 +27,12 @@ def smiles_to_pdbfile(smiles_string):
     mol = Chem.MolToPDBBlock(mol)
     return mol
 
+def smiles_to_inchi(smiles):
+    mol = Chem.MolFromSmiles(smiles)
+    inchi_key = Chem.inchi.MolToInchi(mol)
+
+    return inchi_key
+
 def generate_input_files(smiles, format):
     """
     Generate single input file for quantum chemistry codes

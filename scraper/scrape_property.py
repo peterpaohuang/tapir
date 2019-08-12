@@ -8,6 +8,7 @@ import numpy as np
 
 from bs4 import BeautifulSoup
 from math import ceil
+from ..main.utils import smiles_to_inchi
 
 class polymer_scraper():
     """
@@ -213,6 +214,20 @@ class polymer_scraper():
             outpath to store CSV file
 
         """
+
+        # filter polymer smiles that are incompatible with rdkit while adding inchi keys
+        polymers_removed = 0
+        for index, row in self.df.iterrows():
+            # if index < 5:
+            try:
+                smiles = row["smiles"]
+                inchi = smiles_to_inchi(smiles)
+                self.df.loc[index, "inchi"] = inchi
+            except Exception as e:
+                self.df.drop(index, inplace=True)
+                polymers_removed += 1
+
+        print("{} polymers removed".format(polymers_removed))
 
         self.df.to_csv(outpath)
 
