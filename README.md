@@ -102,7 +102,7 @@ descriptor_df = dx.get_descriptors(polymer_identifier, descriptor_list)
 1. `Protein Data Bank`
 2. `Gaussian 98/03 Input`
 ```
-polymer_identifier = '*C(C*)C' # can also be the polymer_name
+polymer_identifier = 'CC(=O)OC=C' # can also be the polymer_name
 conversion_format = 'Gaussian 98/03 Input'
 outpath = '/file/path/your_polymer.xyz'
 dx.create_input_file(polymer_identifier, conversion_format, outpath)

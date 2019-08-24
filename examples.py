@@ -33,7 +33,7 @@ ml.train(algorithm)
 
 # view model results
 print("YOUR MODEL R^2 SCORE: {}".format(ml.r_2))
-ml.feature_importances() # plot feature importances
+ml.feature_importance() # plot feature importances
 
 # Predict on new data that follows the correponding index placement of the descriptor_list 
 # new_data is [[Any], [Any]] where each array inside represents a single row of input
