@@ -1,4 +1,6 @@
-# Depablo Box
+![alt text](https://github.com/depablo_box/src/tapir.jpg "TAPIR Logo")
+
+# TAPIR (Thermomechanical Advanced Polymer Informatics & Resource)
 
 ## Requirements
 
