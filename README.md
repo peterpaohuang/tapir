@@ -7,12 +7,12 @@
 1. Conda is installed
 
 ## Installation
-1. `git clone https://github.com/peterpaohuang/depablo_box.git`
-2. `conda create -c rdkit -n depablo_box_env rdkit`
-3. `conda activate depablo_box_env`
+1. `git clone https://github.com/peterpaohuang/tapir.git`
+2. `conda create -c rdkit -n tapir rdkit`
+3. `conda activate tapir_env`
 4. Download [polymer_db.csv](https://drive.google.com/file/d/1vh7uhAG-K6P4OrjoJpM5dAgaOyjrw32Z/view?usp=sharing)
-5. Move polymer_db.csv into depablo_box directory
-6. `python setup.py` while inside depablo_box_env conda environment
+5. Move polymer_db.csv into tapir directory
+6. `python setup.py` while inside tapir_env conda environment
 
 ## Initialize
 ```
