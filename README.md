@@ -1,4 +1,4 @@
-![alt text](https://github.com/peterpaohuang/depablo_box/blob/master/src/images/tapir.jpg "TAPIR Logo")
+![alt text](https://github.com/peterpaohuang/depablo_box/blob/master/src/images/tapir3.png "TAPIR Logo")
 
 # TAPIR (Thermomechanical Advanced Polymer Informatics & Resource)
 
